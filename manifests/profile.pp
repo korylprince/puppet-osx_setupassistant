@@ -12,6 +12,25 @@ class osx_setupassistant::profile{
   $skip_apple_pay      = $osx_setupassistant::skip_apple_pay
   $skip_privacy        = $osx_setupassistant::skip_privacy
   $skip_icloud_storage = $osx_setupassistant::skip_icloud_storage
+  $skip_setup_items    = $osx_setupassistant::skip_setup_items
+
+  $managed_settings_initial = {
+    'Forced' => [
+      {
+        'mcx_preference_settings' => {
+          'SkipCloudSetup' => true,
+        }
+      }
+    ]
+  }
+
+  if versioncmp($facts['os']['macosx']['version']['major'], '15') >= 0 {
+    $managed_settings = $managed_settings_initial + {
+      'SkipSetupItems' => $skip_setup_items
+    }
+  } else {
+    $managed_settings = $managed_settings_initial
+  }
 
   $profile = {
     'PayloadContent' => [
@@ -50,15 +69,7 @@ class osx_setupassistant::profile{
       },
       {
         'PayloadContent' => {
-          'com.apple.SetupAssistant.managed' => {
-            'Forced' => [
-              {
-                'mcx_preference_settings' => {
-                  'SkipCloudSetup' => true,
-                }
-              }
-            ]
-          }
+          'com.apple.SetupAssistant.managed' => $managed_settings,
         },
         'PayloadEnabled' => true,
         'PayloadIdentifier' => 'com.apple.SetupAssistant.managed',

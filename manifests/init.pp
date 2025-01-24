@@ -13,6 +13,7 @@ class osx_setupassistant (
   $skip_apple_pay      = true,
   $skip_privacy        = true,
   $skip_icloud_storage = true,
+  $skip_setup_items    = [],
 
 ) {
 
